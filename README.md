@@ -4,4 +4,4 @@ This project is an attempt to generate the JSON object passed to pdfMake
 
 ## Contact
 
-Johan Bodenstein (Author) johan@3dtree.co.za
+Johan Bodenstein (Author) https://github.com/unluckynelson/
