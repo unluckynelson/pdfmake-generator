@@ -50,14 +50,16 @@ app.controller('PdfgenController', function ($scope, debounce, ngDialog, $http) 
             $scope.busy = false;
         });
     };
-    var url = "invoice.docdef.json";
-    $http({url: url}).then(function (rs) {
-        console.log(rs.data);
-        $scope.dd = rs.data;
-        _generatpdf($scope.dd);
-    });
 
-
+    $scope.sample = function() {
+        var url = "invoice.docdef.json";
+        $http({url: url}).then(function (rs) {
+            console.log(rs.data);
+            $scope.dd = rs.data;
+            _generatpdf($scope.dd);
+        });
+    };
+    $scope.sample();
     $scope.preview = debounce(400, function () {
         // var parser = new DOMParser();
         htmlDoc = jQuery.parseHTML($scope.tinymceModel);
