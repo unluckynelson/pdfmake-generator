@@ -1,158 +1,16 @@
-<?php require_once('../../../../Connections/rootx.php'); ?>
 <?php
-//include "../../includes/pre_funcs.php";
-//include "../../includes/joins.php";
-if (!function_exists("toMoney")) {
-    function toMoney($val, $symbol = 'R ', $r = 2)
-    {
-
-
-        $n = str_replace(",", "", $val);
-        $n = str_replace(" ", "", $n);
-        //return($n);
-        if (is_numeric($n)) {
-            $c = is_float($n) ? 1 : number_format($n, $r);
-            $d = '.';
-            $t = ',';
-            $sign = ($n < 0) ? '-' : '';
-            $i = $n = number_format(abs($n), $r);
-            $j = (($j = strlen($i)) > 3) ? $j % 3 : 0;
-
-            return $symbol . $sign . ($j ? substr($i, 0, $j) + $t : '') . preg_replace('/(\d{3})(?=\d)/', "$1" + $t, substr($i, $j));
-        } else {
-            return "R 0";
-        }
-
-    }
-}
-if (isset($_REQUEST['bid'])) {
-    $bid = $_REQUEST['bid'];
-} else {
-    $bid = '26';
-}
-
-
-$sql = "SELECT * FROM loose_buyers WHERE id=" . $bid;
-$rs = mysqli_query($rtx, $sql) or die(mysqli_error($rtx));
-if ($buyer = mysqli_fetch_assoc($rs)) {
-    $totalRows_rs = mysqli_num_rows($rs);
-} else {
-    die("invalid buyer");
-}
-foreach($buyer as $k=>$v) {
-    $buyer[$k] = addslashes($v);
-}
-
-$sql = "SELECT * FROM loose_auctions WHERE id=" . $buyer['aid'];
-$rs = mysqli_query($rtx, $sql) or die(mysqli_error($rtx));
-$auction = mysqli_fetch_assoc($rs);
-foreach($auction as $k=>$v) {
-    $auction[$k] = addslashes($v);
-}
-
-$sql = "SELECT 
-  loose_assets.*,
-  loose_accounts.acid,
-  loose_accounts.buy_id,
-  loose_accounts.amount,
-  loose_accounts.`paid_amt`,
-  loose_accounts.`paid`,
-  loose_accounts.`date_rec`,
-  loose_buyers.`myid`,
-  loose_buyers.`fname`
-FROM
-  loose_assets 
-  LEFT JOIN loose_accounts 
-    ON (
-      loose_accounts.asset_id = loose_assets.`id`
-      OR
-      loose_accounts.`group_id` = loose_assets.`groupid`
-    ) 
-    LEFT JOIN loose_buyers
-    ON (
-      loose_buyers.id = loose_accounts.buy_id
-    )
-   WHERE loose_accounts.buy_id=" . $bid. " ORDER BY groupid,lot_nr ASC ";
-$ars = mysqli_query($rtx, $sql) or die(mysqli_error($rtx));
-$assets = [];
-$assetgroups = array();
-while ($arow = mysqli_fetch_assoc($ars)) {
-    if ($arow['groupid'] != "") {
-        if (!in_array($arow['groupid'], $assetgroups)) {
-            array_push($assetgroups, $arow['groupid']);
-            $arow['desc'] = "Group ".$arow['groupid'].": ".$arow['desc'];
-            array_push($assets, $arow);
-        } else {
-            $arow['desc'] = "Group ".$arow['groupid'].": ".$arow['desc'];
-            $arow['amount'] = "";
-            array_push($assets, $arow);
-        }
-    } else {
-        array_push($assets, $arow);
-    }
-}
-
-$imgs = array();
-$i = 0;
-$mainimg = "";
-
-
-function san($str)
-{
-    $str = strip_tags($str);
-    $str = str_replace(PHP_EOL, " ", $str);
-    $str = html_entity_decode($str);
-    $str = addslashes($str);
-    echo $str;
-}
-
-//if ($buyer['mobnum'] != "") $buyer['mobnum'] = "C: " . $buyer['mobnum'];
-//if ($buyer['tel_w'] != "") $buyer['tel_w'] = "W: " . $buyer['tel_w'];
-//if ($buyer['tel_h'] != "") $buyer['tel_h'] = "H: " . $buyer['tel_h'];
-$contacts = $buyer['mobnum'] . $buyer['tel_w'] . $buyer['tel_h'];
-
-$today = date('F j, Y', time());
-$ac_date = date('F j, Y', strtotime($auction['a_date']));
-$ref = date('dMy', strtotime($auction['a_date']));
-$ref = strtoupper($ref) . "A" . $auction['ref'] . "-" . $buyer['myid'];
-
-$subtotal = 0;
-$flines = "";
-foreach ($assets as $val) {
-    $subtotal += $val['amount'];
-    $itemcost = toMoney($val['amount']);
-    $totalcost = toMoney($val['amount']);
-    if ($val['amount'] == 0) {
-        $itemcost = "";
-        $totalcost = "";
-    }
-    foreach($val as $k=>$v) {
-        $val[$k] = addslashes($v);
-    }
-    $flines .= "['" . $val['lot_nr'] . "', '" . $val['desc'] . "',{text:'1',alignment: 'right'}, {text:\"" . $itemcost . "\",alignment: 'right'}, {text:\"" . $totalcost . "\",alignment: 'right'}],";
-}
-
-
-$tmp = 0;
-$comm = "";
-if ($auction['commision'] != "") {
-    $tmp = $subtotal * ($auction['commision'] / 100);
-    $comm = $auction['commision'];
-}
-$commtitle = "";
-if ($comm != "") $commtitle = "Commision (" . $comm . "%)";
-$vat = ($subtotal + $tmp) * 0.14;
-$total = $subtotal + $tmp + $vat;
-
+/**
+ * This is a sample PDF DocDefinition for an Invoice from another project
+ */
 ?>
 <!doctype html>
 <html>
 <head>
-    <script src="../../../../ceo/app/bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="../../../../ceo/app/bower_components/angular/angular.min.js"></script>
-    <script src="../../../../ceo/app/bower_components/html5shiv/dist/html5shiv.min.js"></script>
-    <script src="../../../../ceo/app/bower_components/pdfmake/build/pdfmake.js"></script>
-    <script src="../../../../ceo/app/bower_components/pdfmake/build/vfs_fonts.js"></script>
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/angular/angular.min.js"></script>
+    <script src="bower_components/html5shiv/dist/html5shiv.min.js"></script>
+    <script src="bower_components/pdfmake/build/pdfmake.js"></script>
+    <script src="bower_components/pdfmake/build/vfs_fonts.js"></script>
 
     <meta charset="utf-8">
     <title>PDF Document</title>
@@ -319,8 +177,8 @@ $total = $subtotal + $tmp + $vat;
                                     margin: 0,
                                     style: 'myHeader',
                                     text: [
-                                        {text: "Tax Invoice: ", bold: true}, {text: "<?php echo $ref ?>\n\n"},
-                                        {text: "Date: ", bold: true}, {text: "<?php echo $today ?>"}
+                                        {text: "Tax Invoice: ", bold: true}, {text: "#1234\n\n"},
+                                        {text: "Date: ", bold: true}, {text: "<?php echo date("Y-m-d") ?>"}
 
                                     ]
                                 }],
@@ -335,53 +193,53 @@ $total = $subtotal + $tmp + $vat;
                                                     text: [{
                                                         text: "Company: ",
                                                         bold: true
-                                                    }, "<?php san($buyer['company']); ?>"]
+                                                    }, "Test Company"]
                                                 }, {
                                                     text: [{
                                                         text: "Contact: ",
                                                         bold: true
-                                                    }, "<?php san($buyer['fname'] . " " . $buyer['sname']); ?>"]
+                                                    }, "Joe Soap"]
                                                 }],
 
                                                 [{
                                                     text: [{
                                                         text: "Office Tel: ",
                                                         bold: true
-                                                    }, "<?php san($buyer['tel_w']); ?>"]
+                                                    }, "+1-555-1045"]
                                                 }, {
                                                     text: [{
                                                         text: "Cellphone: ",
                                                         bold: true
-                                                    }, "<?php san($buyer['mobnum']); ?>"]
+                                                    }, "+1-555-7894"]
                                                 }],
 
                                                 [{
                                                     text: [{
                                                         text: "Home Tel: ",
                                                         bold: true
-                                                    }, "<?php san($buyer['tel_h']); ?>"]
+                                                    }, "+1-555-1564"]
                                                 }, {
                                                     text: [{
                                                         text: "Buyer's No: ",
                                                         bold: true
-                                                    }, "<?php san($buyer['myid']);  ?>"]
+                                                    }, "+1-555-7894"]
                                                 }],
 
                                                 [{
                                                     text: [{
                                                         text: "Email: ",
                                                         bold: true
-                                                    }, "<?php san($buyer['email']); ?>"]
+                                                    }, "joesoap@gmail.com"]
                                                 }, {
                                                     rowSpan: 2,
-                                                    text: [{text: "Address: ", bold: true}, <?php echo json_encode($buyer['addy']); ?>]
+                                                    text: [{text: "Address: ", bold: true}, "1 Pdf, Drive, New York City"]
                                                 }],
 
                                                 [{
                                                     text: [{
                                                         text: "VAT/Id: ",
                                                         bold: true
-                                                    }, "<?php san($buyer['id_no']); ?>"]
+                                                    }, "12332145565"]
                                                 }, ""]
 
 
@@ -397,7 +255,7 @@ $total = $subtotal + $tmp + $vat;
                                     columns: [
                                         {
                                             width: 255,
-                                            text: [{text: "Auction: ", bold: true}, <?php echo json_encode($auction['desc']); ?>],
+                                            text: [{text: "Auction: ", bold: true}, "Various Assets"],
 
                                         },
 
@@ -405,7 +263,7 @@ $total = $subtotal + $tmp + $vat;
                                         {
                                             alignment: 'right',
                                             width: "*",
-                                            text: [{text: "Auction Date: ", bold: true}, "<?php echo $ac_date; ?>"],
+                                            text: [{text: "Auction Date: ", bold: true}, "01-01-2017"],
 
                                         }
                                     ]
@@ -416,7 +274,7 @@ $total = $subtotal + $tmp + $vat;
                                     columns: [
                                         {
                                             width: 255,
-                                            text: [{text: "Terms: ", bold: true}, "<?php san($auction['terms']); ?>"],
+                                            text: [{text: "Terms: ", bold: true}, "10% Deposit required"],
 
                                         },
 
@@ -424,7 +282,7 @@ $total = $subtotal + $tmp + $vat;
                                         {
                                             alignment: 'right',
                                             width: "*",
-                                            text: [{text: "<?php echo $commtitle ?>", bold: true}, ""],
+                                            text: [{text: "", bold: true}, "10% Commision"],
 
                                         }
                                     ]
@@ -454,53 +312,40 @@ $total = $subtotal + $tmp + $vat;
                                                     text: "Total", style: 'tableHeader'
                                                 }],
 
-                                                <?php echo $flines;
 
-
-                                                ?>
 
                                                 //["", "", "", "", ""],
                                                 [{text: '', colSpan: 5}, {}, {}, {}, {}],
                                                 [{
-                                                    text: 'SUB-TOTAL\n<?php echo $commtitle ?>\n14% VAT',
+                                                    text: 'SUB-TOTAL\nCommission\n14% VAT',
                                                     colSpan: 4,
                                                     rowSpan: 3,
                                                     alignment: 'right',
                                                     style:'subcontentFont'
 
                                                 }, {}, {}, {}, {
-                                                    text: '<?php echo toMoney($subtotal) ?>',
+                                                    text: '500.00',
                                                     alignment: 'right',
                                                     bold: true
                                                 }],
 
-                                                <?php if ($comm != "") { ?>
+
                                                 [{
-                                                    text: 'Commision (<?php echo $comm; ?>)',
+                                                    text: 'Commision (10%)',
                                                     colSpan: 4,
                                                     alignment: 'right',
                                                     bold: true
-                                                }, {}, {}, {}, {text: '<?php echo toMoney($tmp) ?>', alignment: 'right'}],
-                                                <?php } else { ?>
-                                                [{
-                                                    text: '',
-                                                    colSpan: 4,
-                                                    alignment: 'right',
-                                                    bold: true
-                                                }, {}, {}, {}, '\n'],
-                                                <?php } ?>
+                                                }, {}, {}, {}, {text: '50.00', alignment: 'right'}],
+
                                                 [{
                                                     text: '14% VAT',
                                                     colSpan: 4,
                                                     alignment: 'right',
                                                     bold: true
-                                                }, {}, {}, {}, {text: '<?php echo toMoney($vat) ?>', alignment: 'right'}],
+                                                }, {}, {}, {}, {text: '5.00', alignment: 'right'}],
 
                                                 [{text: '', colSpan: 5}, {}, {}, {}, {}],
-                                                <?php if ($buyer['depositpaid']) {
-                                                $total = $total - $auction['deposit'];
 
-                                                    ?>
                                                 [{
                                                     text: 'Less Deposit',
                                                     colSpan: 4,
@@ -508,12 +353,12 @@ $total = $subtotal + $tmp + $vat;
 //                                                    bold: true,
 //                                                    fontSize: 12
                                                 }, {}, {}, {}, {
-                                                    text: '<?php echo toMoney($auction['deposit']) ?>',
+                                                    text: '200.00',
                                                     alignment: 'right'
 //                                                    bold: true,
 //                                                    fontSize: 12
                                                 }],
-<?php } ?>
+
                                                 [{
                                                     text: 'TOTAL',
                                                     colSpan: 4,
@@ -521,7 +366,7 @@ $total = $subtotal + $tmp + $vat;
                                                     bold: true,
                                                     fontSize: 12
                                                 }, {}, {}, {}, {
-                                                    text: '<?php echo toMoney($total) ?>',
+                                                    text: '320.00',
                                                     alignment: 'right',
                                                     bold: true,
                                                     fontSize: 12
@@ -538,11 +383,11 @@ $total = $subtotal + $tmp + $vat;
                                     margin: 0,
                                     text: [
                                         {text: "Banking Details: \n", bold: true},
-                                        {text: "Root-X Auctioneers\n"},
-                                        {text: "FNB Bank - Menlyn Branch: 250655\n"},
-                                        {text: "Account no: 625 318 305 46\n"},
+                                        {text: "ACME Auctioneers\n"},
+                                        {text: "Bank - Branch: 250655\n"},
+                                        {text: "Account no: 123 456 789 10\n"},
                                         {text: "Ref No: "},
-                                        {text: "<?php echo $ref ?>", bold: true}
+                                        {text: "#1234", bold: true}
                                     ]
                                 }]
                             ]
@@ -593,18 +438,11 @@ $total = $subtotal + $tmp + $vat;
                 ,
 
                 images: {
-                    banner: "<?php prnimg('../../../../images/pdf/invoice-header.png') ?>"
+                    banner: "<?php prnimg('invoice-header.png') ?>"
                 }
             }
             ;
 
-//        var parentScope = [];
-//        if($window.parent != null)
-//        {
-//            parentScope = $window.opener.ScopeToShare;
-//        }
-
-//        pdfMake.createPdf(docDefinition).download("invoice - <?php //san($ref)?>//.pdf");
 
                 pdfMake.createPdf(docDefinition).open();
 
@@ -614,7 +452,7 @@ $total = $subtotal + $tmp + $vat;
                         + ' src="data:application/pdf;base64,'
                         + escape(data)
                         + '"></embed>';
-                    $("#damnpdf").append(htmlText);
+                    $("#pdfdoc").append(htmlText);
                     //$("body").append('<iframe id="mypdf" type="application/pdf"  width="65%" height="2000" src="data:application/pdf;base64,'+data+'"> </iframe>');
                 }
                 pdfMake.createPdf(docDefinition).getBase64(callme);
@@ -649,6 +487,6 @@ $total = $subtotal + $tmp + $vat;
     </script>
 </head>
 <body>
-<div id="damnpdf" style="width: 70%; height: 1000px"></div>
+<div id="pdfdoc" style="width: 70%; height: 1000px"></div>
 </body>
 </html>
