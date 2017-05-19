@@ -15,7 +15,7 @@ File Name  | Description
 invoice.decdef.json  | Sample invoice JSON DocDefinition for pdfmake
 print.pdf.php  | Sample PHP page for invoice JSON DocDefinition for pdfmake
 index.html | App Entry point
-app.js | The App
+app.js | The Application
 
 ## Contact
 
