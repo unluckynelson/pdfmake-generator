@@ -1,0 +1,32 @@
+{
+  "name": "pdfmake-generator",
+  "authors": [
+    "Johan Bodenstein <johan@3dtree.co.za>"
+  ],
+  "description": "DocDefinition generator for pdfMake",
+  "main": "",
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-ui-tinymce": "^0.0.18",
+    "json-formatter": "^0.6.0",
+    "angular-animate": "^1.6.4",
+    "angular-touch": "^1.6.4",
+    "bootstrap": "^3.3.7",
+    "jquery": "^3.2.1",
+    "angular-sanitize": "^1.6.4",
+    "angular-debounce": "^1.1.0",
+    "pdfmake": "^0.1.28",
+    "angular-loading-bar": "^0.9.0",
+    "angular-material": "^1.1.4",
+    "angular-aria": "^1.6.4",
+    "ng-dialog": "ngDialog#^1.1.0"
+  }
+}
