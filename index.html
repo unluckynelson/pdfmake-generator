@@ -39,7 +39,7 @@
 
 </head>
 <body ng-app="myApp">
-<form method="post" ng-controller="TinyMceController">
+<form method="post" ng-controller="PdfgenController">
     <div class="container">
         <nav class="navbar navbar-default">
             <div class="container-fluid">
@@ -57,7 +57,9 @@
                 <!-- Collect the nav links, forms, and other content for toggling -->
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav">
-                        <li><a ng-click="help">How does it work? <span class="sr-only">(current)</span></a></li>
+                        <li><a href="" ng-click="help()">How does it work? <span class="sr-only">(current)</span></a></li>
+                        <li style="padding-top: 9px;"><button type="button" ng-click="preview()" class="btn btn-warning btn-sm">GENERATE PDF
+                            </button></li>
                         <!--<li class="dropdown">-->
                             <!--<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>-->
                             <!--<ul class="dropdown-menu">-->
@@ -72,26 +74,26 @@
                         <!--</li>-->
                     </ul>
 
-                    <ul class="nav navbar-nav navbar-right">
-                        <li><a href="#">Link</a></li>
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-                            <ul class="dropdown-menu">
-                                <li><a href="#">Action</a></li>
-                                <li><a href="#">Another action</a></li>
-                                <li><a href="#">Something else here</a></li>
-                                <li role="separator" class="divider"></li>
-                                <li><a href="#">Separated link</a></li>
-                            </ul>
-                        </li>
-                    </ul>
+                    <!--<ul class="nav navbar-nav navbar-right">-->
+                        <!--<li><a href="#">Link</a></li>-->
+                        <!--<li class="dropdown">-->
+                            <!--<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>-->
+                            <!--<ul class="dropdown-menu">-->
+                                <!--<li><a href="#">Action</a></li>-->
+                                <!--<li><a href="#">Another action</a></li>-->
+                                <!--<li><a href="#">Something else here</a></li>-->
+                                <!--<li role="separator" class="divider"></li>-->
+                                <!--<li><a href="#">Separated link</a></li>-->
+                            <!--</ul>-->
+                        <!--</li>-->
+                    <!--</ul>-->
                 </div><!-- /.navbar-collapse -->
             </div><!-- /.container-fluid -->
         </nav>
 
         <div class="row">
             <div class="col-lg-8 col-md-8 col-sm-12">
-                <textarea ui-tinymce="tinymceOptions" ng-change="preview()" rows="10" ng-model="tinymceModel"></textarea>
+                <textarea ui-tinymce="tinymceOptions"  rows="10" ng-model="tinymceModel"></textarea>
             </div>
             <div class="col-lg-4 col-md-4 col-sm-12">
                 <div><b class="font-size-sm">$scope.dd</b>

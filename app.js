@@ -10,7 +10,7 @@ var app = angular.module('myApp', [
     'ngDialog'
 ]);
 
-app.controller('TinyMceController', function ($scope, debounce, ngDialog) {
+app.controller('PdfgenController', function ($scope, debounce, ngDialog, $http) {
     $scope.tinymceModel = '<p>Initial content</p> <table style="height: 71px;" width="100%" border="1"> <tbody> <tr> <td style="width: 0px;">Table Column 1</td> <td style="width: 0px;">Table Column 2</td> </tr> <tr> <td style="width: 0px;">row1</td> <td style="width: 0px;">&nbsp;</td> </tr> <tr> <td style="width: 0px;">row2</td> <td style="width: 0px;">&nbsp;</td> </tr> </tbody> </table>';
 
     $scope.busy = false;
@@ -36,21 +36,9 @@ app.controller('TinyMceController', function ($scope, debounce, ngDialog) {
             {title: 'Table row 1', selector: 'tr', classes: 'tablerow1'}
         ]
     };
-    $scope.dd = {
-        pageSize: "A4",
-        pageMargins: [15, 20, 15, 150],
-        content: [{
-            text: $scope.tinymceModel
-        }]
-    };
 
-    $scope.preview = debounce(400, function () {
-        // var parser = new DOMParser();
-        htmlDoc = jQuery.parseHTML($scope.tinymceModel);
-        $scope.dd = htmlDoc;
-        /*$scope.busy = true;
-        $scope.dd.content = [{text: $scope.tinymceModel}];
-        var pdfDocGenerator = pdfMake.createPdf($scope.dd);
+    var _generatpdf = function(dd) {
+        var pdfDocGenerator = pdfMake.createPdf(dd);
         pdfDocGenerator.getDataUrl(function (dataUrl) {
             var targetElement = document.querySelector('#iframeContainer');
             $(targetElement).html("");
@@ -60,9 +48,25 @@ app.controller('TinyMceController', function ($scope, debounce, ngDialog) {
             iframe.height = 800;
             targetElement.appendChild(iframe);
             $scope.busy = false;
-        });*/
+        });
+    };
+    var url = "invoice.docdef.json";
+    $http({url: url}).then(function (rs) {
+        console.log(rs.data);
+        $scope.dd = rs.data;
+        _generatpdf($scope.dd);
     });
-    $scope.preview();
+
+
+    $scope.preview = debounce(400, function () {
+        // var parser = new DOMParser();
+        htmlDoc = jQuery.parseHTML($scope.tinymceModel);
+        // $scope.dd = htmlDoc;
+        $scope.busy = true;
+        $scope.dd.content = [{text: $scope.tinymceModel}];
+        _generatpdf($scope.dd);
+    });
+    // $scope.preview();
 
     $scope.help = function (x) {
         $scope.hform = {
