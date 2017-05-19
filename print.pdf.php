@@ -456,28 +456,35 @@
         pdfMake.createPdf(docDefinition).getBase64(callme);
 
 
-        var html = {
-            table: {
-                class: [],
-                style: [],
-                tr: [
-                    {
-                        td: {
-                            class: [],
-                            style: [],
-                            text: []
+        var obj = {
+            html: {
+                table: {
+                    classes: ["table", "table-condensed"],
+                    styles: [],
+                    tr: [
+                        {
+                            td: {
+                                classes: [],
+                                styles: [],
+                                text: [{"Some text "}, {
+                                    div: {
+                                        classes: [],
+                                        styles: [],
+                                        text: "Nested Div"
+                                    }
+                                }]
+                            }
+                        },
+                        {
+                            td: {
+                                classes: [],
+                                styles: [],
+                                text: []
+                            }
                         }
-                    },
-                    {
-                        td: {
-                            class: [],
-                            style: [],
-                            text: []
-                        }
-                    }
-                ]
+                    ]
+                }
             }
-
         }
 
 
